@@ -45,6 +45,7 @@ var firstOperand;
 var secondOperand;
 var operator;
 var bDoOperation = false;
+var bContainsPeriod = false;
 
 
 function onButtonPress(button)
@@ -60,6 +61,15 @@ function onKeyPress(keyEvent)
         // Process number
         Screen.textContent += keyEvent.key;
         console.log(keyEvent.key);
+    }
+    else if(keyEvent.key == "." && keyEvent.key != " " &&!bContainsPeriod)
+    {
+        bContainsPeriod = true;
+        Screen.textContent += keyEvent.key;
+    }
+    else if(firstOperand == "" && operator == "")
+    {
+       return; 
     }
     else {
         if(bDoOperation) {PerformOperation();}
@@ -82,6 +92,9 @@ function onKeyPress(keyEvent)
                 break;
             case '=':
                 PerformOperation();
+                break;
+            case 'c':
+                Screen.textContent = "";
                 break;
             default:
                 break;
@@ -113,4 +126,6 @@ function PerformOperation()
         default:
             break;
     }
+    firstOperand = '';
+    secondOperand = '';
 }
