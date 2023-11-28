@@ -24,7 +24,7 @@ function operate(operator, operand1, operand2)
 {
     operand1 = parseFloat(operand1);
     operand2 = parseFloat(operand2);
-    let result = operator(operand1,operand2);
+    let result = operator(operand1,operand2).toFixed(2);
     Screen.textContent = result;
     firstOperand = result;
 }
@@ -46,37 +46,52 @@ var secondOperand;
 var operator;
 var bDoOperation = false;
 var bContainsPeriod = false;
+// Flag to determine if the calculator is currently displaying a number that came immediately after an equals 
+var bPostEquals = false;
 
+const BUTTON_DEFAULT_COLOR = "black";
+const BUTTON_SELECT_COLOR = "#004d87"; 
 
 function onButtonPress(button)
 {
-    Screen.textContent = button.textContent;
+    button.style.backgroundColor = BUTTON_SELECT_COLOR;
+    processKey(button.textContent);
 }
 
-function onKeyPress(keyEvent)
+function processKey(key)
 {
     // Process 0-9
-    if(parseInt(keyEvent.key) || keyEvent.key == '0')
+    if(parseInt(key) || key == '0')
     {
+        if(bPostEquals)
+        {
+            Screen.textContent = "";
+            bPostEquals = false;
+        }
         // Process number
-        Screen.textContent += keyEvent.key;
-        console.log(keyEvent.key);
+        Screen.textContent += key;
+        console.log(key);
     }
-    else if(keyEvent.key == "." && keyEvent.key != " " &&!bContainsPeriod)
+    else if(key == "." && key != " " &&!bContainsPeriod)
     {
+        if(bPostEquals)
+        {
+            Screen.textContent = "";
+            bPostEquals = false;
+        }
+
         bContainsPeriod = true;
-        Screen.textContent += keyEvent.key;
+        Screen.textContent += key;
     }
     else if(firstOperand == "" && operator == "")
     {
        return; 
     }
     else {
-        if(bDoOperation) {PerformOperation();}
-        else {
-            bDoOperation = true;
-        }
-        switch(keyEvent.key)
+        // Reset the post equals flag if an operand is inputted
+        if(bPostEquals)
+            bPostEquals = false;
+        switch(key)
         {
             case '+':
                 Screen.textContent += " + ";
@@ -90,8 +105,10 @@ function onKeyPress(keyEvent)
             case '/':
                 Screen.textContent += ' / ';
                 break;
+            case 'Enter':
             case '=':
                 PerformOperation();
+                bPostEquals = true;
                 break;
             case 'c':
                 Screen.textContent = "";
@@ -100,7 +117,12 @@ function onKeyPress(keyEvent)
                 break;
         }
     }
-    console.log("KEY EVENT");
+ 
+}
+
+function onKeyPress(keyEvent)
+{
+    processKey(keyEvent.key);
 }
 
 function PerformOperation()
