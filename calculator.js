@@ -51,17 +51,27 @@ var bPostEquals = false;
 
 const BUTTON_DEFAULT_COLOR = "black";
 const BUTTON_SELECT_COLOR = "#004d87"; 
+var prevHighlightedButton;
 
 function onButtonPress(button)
 {
-    button.style.backgroundColor = BUTTON_SELECT_COLOR;
     processKey(button.textContent);
+    if(button.textContent == '+' || button.textContent == '*'
+        || button.textContent == '/' || button.textContent == '-')
+    {
+        button.style.backgroundColor = BUTTON_SELECT_COLOR;
+        prevHighlightedButton = button;
+    }
+    else 
+    {
+        prevHighlightedButton.style.backgroundColor = BUTTON_DEFAULT_COLOR;
+    }
 }
 
 function processKey(key)
 {
     // Process 0-9
-    if(parseInt(key) || key == '0')
+    if(Screen.textContent.length  <= 9 && parseInt(key) || key == '0')
     {
         if(bPostEquals)
         {
@@ -72,7 +82,7 @@ function processKey(key)
         Screen.textContent += key;
         console.log(key);
     }
-    else if(key == "." && key != " " &&!bContainsPeriod)
+    else if(Screen.textContent.length <= 9 && key == "." && key != " " &&!bContainsPeriod)
     {
         if(bPostEquals)
         {
@@ -87,7 +97,7 @@ function processKey(key)
     {
        return; 
     }
-    else {
+    else if(Screen.textContent.length <= 11) {
         // Reset the post equals flag if an operand is inputted
         if(bPostEquals)
             bPostEquals = false;
