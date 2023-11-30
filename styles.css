@@ -1,3 +1,6 @@
+/* Default Color Palette */
+/* https://colorhunt.co/palette/f3eeeaebe3d5b0a695776b5d */
+
 #Calculator {
     width: 550px;
     height: 800px;
@@ -15,7 +18,7 @@
     display:flex;
     align-items: center;
     justify-content: center;
-    margin-bottom:50px;
+    margin-bottom:10px;
 }
 #ButtonArea {
     background-color: #B0A695;
@@ -65,6 +68,10 @@
     justify-content:center;
     font-size:xxx-large;
     border:2px solid #776B5D;
+}
+
+.button.\30{
+    width: 210px;
 }
 
 .button.spacer {
