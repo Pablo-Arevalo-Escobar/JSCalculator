@@ -41,13 +41,14 @@ buttons.forEach((button) => {
    });
 });
 
-var firstOperand;
-var secondOperand;
+var operands = ["",""];
+var currentOperand = 0;
 var operator;
 var bDoOperation = false;
 var bContainsPeriod = false;
 // Flag to determine if the calculator is currently displaying a number that came immediately after an equals 
 var bPostEquals = false;
+var bReadNextNum = false;
 
 const BUTTON_DEFAULT_COLOR = "black";
 const BUTTON_SELECT_COLOR = "#004d87"; 
@@ -57,12 +58,12 @@ function onButtonPress(button)
 {
     processKey(button.textContent);
     if(button.textContent == '+' || button.textContent == '*'
-        || button.textContent == '/' || button.textContent == '-')
+        ||button.textContent == '/' || button.textContent == '-')
     {
         button.style.backgroundColor = BUTTON_SELECT_COLOR;
         prevHighlightedButton = button;
     }
-    else 
+    else if (prevHighlightedButton != null) 
     {
         prevHighlightedButton.style.backgroundColor = BUTTON_DEFAULT_COLOR;
     }
@@ -73,10 +74,11 @@ function processKey(key)
     // Process 0-9
     if(Screen.textContent.length  <= 9 && parseInt(key) || key == '0')
     {
-        if(bPostEquals)
+        if(bPostEquals || bReadNextNum)
         {
             Screen.textContent = "";
             bPostEquals = false;
+            bReadNextNum = false;
         }
         // Process number
         Screen.textContent += key;
@@ -93,35 +95,49 @@ function processKey(key)
         bContainsPeriod = true;
         Screen.textContent += key;
     }
-    else if(firstOperand == "" && operator == "")
-    {
-       return; 
-    }
     else if(Screen.textContent.length <= 11) {
         // Reset the post equals flag if an operand is inputted
+        bReadNextNum = true;
         if(bPostEquals)
             bPostEquals = false;
         switch(key)
         {
             case '+':
-                Screen.textContent += " + ";
+                //Screen.textContent += " + ";
+                operands[currentOperand] = Screen.textContent;
+                currentOperand += (currentOperand+1)%2;
+                operator = "+";
                 break;
             case '-':
-                Screen.textContent += ' - ';
+                operands[currentOperand] = Screen.textContent;
+                currentOperand += (currentOperand+1)%2;
+                
+                operator = '-';
                 break;
             case '*':
-                Screen.textContent += ' * ';
+                operands[currentOperand] = Screen.textContent;
+                currentOperand += (currentOperand+1)%2;
+                
+                operator = '*';
                 break;
             case '/':
-                Screen.textContent += ' / ';
+                operands[currentOperand] = Screen.textContent;
+                currentOperand += (currentOperand+1)%2;
+                
+                operator = '/';
                 break;
             case 'Enter':
             case '=':
+                operands[currentOperand]= Screen.textContent;
                 PerformOperation();
+                currentOperand = (currentOperand+1)%2;
                 bPostEquals = true;
                 break;
             case 'c':
+                operands = ["",""];
+                currentOperand = 0;
                 Screen.textContent = "";
+                operator = "";
                 break;
             default:
                 break;
@@ -130,6 +146,7 @@ function processKey(key)
  
 }
 
+
 function onKeyPress(keyEvent)
 {
     processKey(keyEvent.key);
@@ -137,23 +154,21 @@ function onKeyPress(keyEvent)
 
 function PerformOperation()
 {
-
-    const arr = Screen.textContent.trim().split(" ");
-    console.log(arr);
-    console.log("SWITH ON " + arr[1]);
-    switch(arr[1])
+    let firstOperand = operands[(currentOperand+1)%2];
+    let secondOperand = operands[currentOperand];
+    switch(operator)
     {
         case '+':
-            operate(add, arr[0], arr[2]);
+            operate(add, firstOperand, secondOperand);
             break;
         case '-':
-            operate(subtract, arr[0], arr[2]);
+            operate(subtract,firstOperand, secondOperand);
             break;
         case '*':
-            operate(multiply, arr[0], arr[2]);
+            operate(multiply, firstOperand, secondOperand);
             break;
         case '/':
-            operate(divide, arr[0], arr[2]);
+            operate(divide, firstOperand, secondOperand);
             break;
         default:
             break;
